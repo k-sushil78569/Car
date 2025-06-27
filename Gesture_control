@@ -1,0 +1,37 @@
+#include <Wire.h>
+#include <MPU6050.h>
+
+MPU6050 mpu;
+
+void setup() {
+  Serial.begin(115200);      // For serial or wireless transmission
+  Wire.begin();
+  mpu.initialize();
+
+  if (!mpu.testConnection()) {
+    Serial.println("MPU6050 connection failed!");
+    while (1);
+  }
+
+  Serial.println("MPU6050 connected");
+}
+
+void loop() {
+  int16_t ax, ay, az, gx, gy, gz;
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+  // Simple gesture mapping (you can adjust thresholds based on testing)
+  if (ay > 15000) {
+    Serial.println("F"); // Forward
+  } else if (ay < -15000) {
+    Serial.println("B"); // Backward
+  } else if (ax > 15000) {
+    Serial.println("L"); // Left
+  } else if (ax < -15000) {
+    Serial.println("R"); // Right
+  } else {
+    Serial.println("S"); // Stop
+  }
+
+  delay(200); // Debounce delay
+}
